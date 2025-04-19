@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}My Prompts - Chatur{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">My Prompts</h1>
+{% for p in prompts %}
+<div class="bg-white p-4 rounded-xl shadow mb-4">
+  <h2 class="text-lg font-semibold mb-1">{{ p.title }}</h2>
+  <p class="text-gray-600 text-sm">{{ p.prompt_text }}</p>
+  {% if p.tag_list %}
+  <div class="text-xs text-gray-500 mt-2">
+    {% for tag in p.tag_list %}
+      <span class="inline-block bg-gray-200 px-2 py-1 rounded mr-1">#{{ tag }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% empty %}
+<p>No prompts yet. <a href="/submit" class="text-blue-500">Add one now</a></p>
+{% endfor %}
+{% endblock %}

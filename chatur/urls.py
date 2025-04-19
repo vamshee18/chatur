@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from prompts.views import home
+from prompts.views import home, submit_prompt, signup_view, my_prompts
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
+    path('submit/', submit_prompt, name='submit_prompt'),
+    path("signup/", signup_view, name="signup"),
+    path("login/", auth_views.LoginView.as_view(template_name="auth/login.html"), name="login"),
+    path("my-prompts/", my_prompts, name="my_prompts"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]

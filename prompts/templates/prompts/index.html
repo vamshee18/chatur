@@ -1,33 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Chatur 🐿️ - Smart AI Prompts</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-800">
+{% extends "base.html" %}
+{% block title %}Home - Chatur{% endblock %}
+{% block content %}
+<form method="get" class="flex flex-col md:flex-row gap-4 mb-6">
+  <input type="text" name="search" value="{{ search }}" placeholder="Search prompts..." class="flex-1 px-4 py-2 rounded border" />
+  <select name="category" class="px-4 py-2 rounded border">
+    <option value="">All Categories</option>
+    <option value="career" {% if category == "career" %}selected{% endif %}>Career</option>
+    <option value="study" {% if category == "study" %}selected{% endif %}>Study</option>
+    <option value="social" {% if category == "social" %}selected{% endif %}>Social</option>
+    <option value="coding" {% if category == "coding" %}selected{% endif %}>Coding</option>
+    <option value="other" {% if category == "other" %}selected{% endif %}>Other</option>
+  </select>
+  <button class="bg-indigo-500 text-white px-4 py-2 rounded">Search</button>
+</form>
 
-  <header class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 text-center">
-    <h1 class="text-4xl font-bold">Chatur 🐿️</h1>
-    <p class="text-xl mt-2">Smart AI Prompts for Students & Professionals</p>
-  </header>
 
-  <main class="max-w-6xl mx-auto py-10 px-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {% for p in prompts %}
-    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-      <h2 class="text-lg font-semibold mb-2">{{ p.title }}</h2>
-      <p class="text-sm text-gray-600 mb-4">{{ p.prompt_text }}</p>
-      <button onclick="navigator.clipboard.writeText(`{{ p.prompt_text }}`); alert('Copied!')"
-              class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
-        Copy Prompt
-      </button>
+{% if all_tags %}
+<div class="mb-6 flex flex-wrap gap-2">
+  {% for t in all_tags %}
+    <a href="?tag={{ t }}{% if search %}&search={{ search }}{% endif %}{% if category %}&category={{ category }}{% endif %}"
+       class="text-xs px-3 py-1 rounded-full border border-purple-500
+              {% if tag == t %}bg-purple-500 text-white{% else %}text-purple-500 hover:bg-purple-100{% endif %}">
+      #{{ t }}
+    </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {% for p in page_obj %}
+  <div class="bg-white p-4 rounded-xl shadow hover:shadow-md">
+    <h2 class="text-lg font-semibold mb-2">{{ p.title }}</h2>
+    <span class="text-xs text-gray-400 uppercase">{{ p.category }}</span>
+    <p class="text-gray-600 text-sm mt-2 mb-4">{{ p.prompt_text }}</p>
+    {% if p.tag_list %}
+    <div class="text-xs text-gray-500 mt-1">
+      {% for tag in p.tag_list %}
+        <a href="?tag={{ tag }}" class="inline-block bg-gray-200 px-2 py-1 rounded mr-1 hover:bg-gray-300">
+          #{{ tag }}
+        </a>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </main>
+    {% endif %}
+    <button onclick="navigator.clipboard.writeText(`{{ p.prompt_text }}`); alert('Copied!')"
+            class="mt-3 bg-indigo-500 text-white text-sm px-3 py-2 rounded hover:bg-indigo-600">
+      Copy Prompt
+    </button>
+  </div>
+  {% endfor %}
+</div>
 
-  <footer class="text-center text-sm text-gray-500 py-6">
-    &copy; 2025 Chatur 🐿️. Made in India with ❤️
-  </footer>
-
-</body>
-</html>
+<div class="text-center mt-10">
+  <span class="text-sm text-gray-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  <div class="mt-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&category={{ category }}&tag={{ tag }}" class="text-blue-500 px-3">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&category={{ category }}&tag={{ tag }}" class="text-blue-500 px-3">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
